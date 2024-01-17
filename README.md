@@ -1,7 +1,7 @@
 - 🧼 Hi, I’m @lptl
 - 🫧 I’m interested in compiler & database
 - 🎐 I’m currently learning informatics
-- 🧪 I’m looking to collaborate on compiler & database projects
+- 🧪 I’m looking to collaborate on machine learning & database projects
 - 💭 How to reach me manpolanic@outlook.com or lptlk@outlook.com
 
 <!---
