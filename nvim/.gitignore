@@ -1,0 +1,12 @@
+# Swap and backup files
+*.swp
+*.swo
+*~
+
+# Undo history / session files
+.netrwhist
+*.un~
+
+# OS specific files
+.DS_Store
+Thumbs.db
