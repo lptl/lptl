@@ -6,6 +6,6 @@
 
 -- 1. Enable full mouse support (click, drag to select, scroll)
 vim.opt.mouse = "a"
-
+vim.opt.termguicolors = true
 -- 2. Sync Neovim's clipboard with your operating system's clipboard
 vim.opt.clipboard = "unnamedplus"
