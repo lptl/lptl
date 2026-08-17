@@ -1,0 +1,91 @@
+font-family = Yisk 1229
+font-size = 11
+macos-titlebar-style = hidden
+macos-titlebar-proxy-icon = hidden
+macos-option-as-alt = true
+background-opacity = 0.50
+background-blur-radius = 50
+theme=light:Piatto Light,dark:Blazer
+cursor-style=block
+font-style=Regular
+font-thicken=false
+window-title-font-family=Helvetica Neue
+window-new-tab-position=current
+window-padding-x = 10
+window-padding-y = 8
+window-padding-balance = true
+scrollback-limit = 10000000
+shell-integration = detect
+shell-integration-features = cursor,sudo,title
+window-save-state = default
+confirm-close-surface = false
+copy-on-select = true
+window-inherit-working-directory = true
+unfocused-split-opacity = 0.85
+split-divider-color = "#444444"
+mouse-hide-while-typing = true
+clipboard-trim-trailing-spaces = true
+window-save-state = always
+macos-icon = official
+window-colorspace = display-p3
+quit-after-last-window-closed = false
+shell-integration-features = no-cursor
+cursor-style-blink = false
+scrollbar = never
+unfocused-split-opacity = 0.75
+background = #191919
+foreground = #e0e0e0
+window-show-tab-bar = never
+window-decoration = false
+
+minimum-contrast = 1.1
+alpha-blending = linear-corrected
+adjust-cell-height = 0
+adjust-cell-width = 5%
+
+# Background / Foreground
+background = #0d0d0d
+foreground = #cdc9c9
+
+# Cursor
+cursor-style = block
+cursor-color = #d4d4d4
+cursor-text = #0d0d0d
+cursor-style-blink = false
+
+# Selection
+selection-background = #3a3a3a
+selection-foreground = #f0f0f0
+
+# 16-color ANSI palette — grayscale + highlight colors
+# Normal colors (0-7)
+palette = 0=#0d0d0d
+palette = 1=#4a4a4a
+palette = 2=#548b54
+palette = 3=#cdcd00
+palette = 4=#808080
+palette = 5=#929292
+palette = 6=#a4a4a4
+palette = 7=#c0c0c0
+
+# Bright colors (8-15)
+palette = 8=#5a5a5a
+palette = 9=#6c6c6c
+palette = 10=#9bcd9b
+palette = 11=#cdcd00
+palette = 12=#a2a2a2
+palette = 13=#b4b4b4
+palette = 14=#c6c6c6
+palette = 15=#f0f0f0
+
+# Search match highlighting
+search-foreground = #0d0d0d
+search-background = #cdcd00
+search-selected-foreground = #0d0d0d
+search-selected-background = #9bcd9b
+
+# Split & UI accents
+split-divider-color = #333333
+unfocused-split-opacity = 0.7
+
+minimum-contrast = 1.2
