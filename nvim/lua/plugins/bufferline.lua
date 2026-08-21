@@ -4,7 +4,9 @@ return {
   opts = {
     options = {
       mode = "buffers",
-      themable = true,
+      -- lackluster ships its own BufferLine groups; with themable=true our
+      -- highlights are applied as mere defaults and the theme always wins
+      themable = false,
 
       -- minimal indicators
       numbers = "none",
@@ -59,16 +61,16 @@ return {
     -- (grays/blues match the lackluster palette)
     highlights = {
       fill = { bg = "NONE" },
-      background = { fg = "#666666", bg = "NONE" },
+      background = { fg = "#444444", bg = "NONE" },
 
       buffer_selected = {
-        fg = "#EEEEEE",
+        fg = "#AAAAAA",
         bg = "NONE",
         bold = false,
         italic = false,
       },
       buffer_visible = {
-        fg = "#AAAAAA",
+        fg = "#666666",
         bg = "NONE",
       },
 

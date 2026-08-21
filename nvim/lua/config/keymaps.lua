@@ -30,3 +30,23 @@ vim.keymap.set("n", "<leader>fy", function()
   vim.fn.setreg("+", path)
   vim.notify("Copied: " .. path)
 end, { desc = "Copy file path" })
+
+-- Create a new file relative to the current buffer's directory
+vim.keymap.set("n", "<leader>fn", function()
+  local dir = vim.fn.expand("%:p:h")
+  local name = vim.fn.input("New file: " .. dir .. "/")
+  if name ~= "" then
+    vim.cmd.edit(dir .. "/" .. name)
+  end
+end, { desc = "New file (buffer dir)" })
+
+-- Create a new directory relative to the current buffer's directory
+vim.keymap.set("n", "<leader>dn", function()
+  local dir = vim.fn.expand("%:p:h")
+  local name = vim.fn.input("New directory: " .. dir .. "/")
+  if name ~= "" then
+    local path = dir .. "/" .. name
+    vim.fn.mkdir(path, "p")
+    vim.notify("Created: " .. path)
+  end
+end, { desc = "New directory (buffer dir)" })
