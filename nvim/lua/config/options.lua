@@ -9,3 +9,4 @@ vim.opt.mouse = "a"
 vim.opt.termguicolors = true
 -- 2. Sync Neovim's clipboard with your operating system's clipboard
 vim.opt.clipboard = "unnamedplus"
+vim.opt.foldenable = false
