@@ -46,9 +46,9 @@ return {
         red = "#fafad2",
         -- WARN: Watchout! messing with grays is probs a bad idea, its very easy to shoot yourself in the foot!
         black = "#232425",
-        gray1 = "#777777",
-        gray2 = "#777777",
-        gray3 = "#AAAAAA",
+        gray1 = "#222222",
+        gray2 = "#444444",
+        gray3 = "#666666",
         gray4 = "#AAAAAA",
         gray5 = "#AAAAAA",
         gray6 = "#AAAAAA",
@@ -68,19 +68,6 @@ return {
     "LazyVim/LazyVim",
     opts = {
       colorscheme = "lackluster",
-    },
-  },
-  {
-    "xiyaowong/transparent.nvim",
-    lazy = false,
-    opts = {
-      extra_groups = {
-        "NeoTreeNormal",
-        "NeoTreeNormalNC",
-        "NeoTreeEndOfBuffer",
-        "NormalFloat",
-        "FloatBorder",
-      },
     },
   },
 }

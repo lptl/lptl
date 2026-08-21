@@ -56,18 +56,19 @@ return {
     },
 
     -- muted, low-contrast highlight overrides for a flatter look
+    -- (grays/blues match the lackluster palette)
     highlights = {
       fill = { bg = "NONE" },
-      background = { fg = "#6c7086", bg = "NONE" },
+      background = { fg = "#666666", bg = "NONE" },
 
       buffer_selected = {
-        fg = "#cdd6f4",
+        fg = "#EEEEEE",
         bg = "NONE",
         bold = false,
         italic = false,
       },
       buffer_visible = {
-        fg = "#7f849c",
+        fg = "#AAAAAA",
         bg = "NONE",
       },
 
@@ -75,13 +76,13 @@ return {
       separator_selected = { fg = "NONE", bg = "NONE" },
       separator_visible = { fg = "NONE", bg = "NONE" },
 
-      indicator_selected = { fg = "#89b4fa", bg = "NONE" },
+      indicator_selected = { fg = "#87ceeb", bg = "NONE" },
 
-      modified = { fg = "#f9e2af", bg = "NONE" },
-      modified_selected = { fg = "#f9e2af", bg = "NONE" },
+      modified = { fg = "#fafad2", bg = "NONE" },
+      modified_selected = { fg = "#fafad2", bg = "NONE" },
 
-      duplicate = { fg = "#6c7086", bg = "NONE", italic = true },
-      duplicate_selected = { fg = "#cdd6f4", bg = "NONE", italic = true },
+      duplicate = { fg = "#666666", bg = "NONE", italic = true },
+      duplicate_selected = { fg = "#cdc9c9", bg = "NONE", italic = true },
     },
   },
 }

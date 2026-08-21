@@ -10,10 +10,13 @@ return {
     debounce_delay = 1000, -- delay in ms before saving on TextChanged
     condition = function(buf)
       local fn = vim.fn
-      local utils = require("auto-save.utils.data")
 
-      -- Do not save if file is special buffer (like Telescope, Neo-tree, terminal) or read-only
-      if fn.getbufvar(buf, "&buftype") ~= "" or fn.getbufvar(buf, "&readonly") == 1 then
+      -- Do not save unnamed buffers, special buffers (like Telescope, Neo-tree, terminal) or read-only ones
+      if
+        fn.bufname(buf) == ""
+        or fn.getbufvar(buf, "&buftype") ~= ""
+        or fn.getbufvar(buf, "&readonly") == 1
+      then
         return false
       end
       return true

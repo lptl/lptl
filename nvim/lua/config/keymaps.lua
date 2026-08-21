@@ -17,12 +17,13 @@ vim.keymap.set("n", "<leader><leader>", function()
   require("snacks").picker.buffers()
 end, { desc = "Buffers" })
 
-vim.keymap.set("v", "<D-c>", '"+y', { desc = "Copy selection to clipboard" })
-
 vim.keymap.set("n", "<leader>cy", function()
   vim.fn.setreg("+", vim.fn.getcwd())
   vim.notify("Copied cwd: " .. vim.fn.getcwd())
 end, { desc = "Copy cwd to clipboard" })
+
+-- Toggle auto-save (auto-save.nvim)
+vim.keymap.set("n", "<leader>uS", "<cmd>ASToggle<cr>", { desc = "Toggle auto-save" })
 
 vim.keymap.set("n", "<leader>fy", function()
   local path = vim.fn.expand("%:p")
