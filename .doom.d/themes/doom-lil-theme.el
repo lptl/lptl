@@ -75,7 +75,7 @@
    (fringe                   :background bg)
    (treemacs-window-background-face :background bg)
    ;; Line Numbers
-   (line-number              :background bg :foreground base4)
+   (line-number              :background bg :foreground base5)
    (line-number-current-line :background bg :foreground fg :weight 'bold)
    ;; Current line highlight & Selection
    (hl-line                  :background current-line)

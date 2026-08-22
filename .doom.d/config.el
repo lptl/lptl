@@ -135,10 +135,30 @@
 ;; (Optional) Customize the prompt text color (e.g., "M-x ", "Find file: ")
 (custom-set-faces!
   '(minibuffer-prompt :foreground "#cdc9c9" :weight bold))
+
 (setq evil-normal-state-cursor '(box "#cdc9c9")   ; Blue block in Normal mode
       evil-insert-state-cursor '(box "#5f9ea0")   ; Green block in Insert mode
       evil-visual-state-cursor '(box "#8fbc8f")   ; Orange block in Visual mode
       evil-replace-state-cursor '(box "#ffff00")) ; Red block in Replace mode
+
+(defun my/transparent-terminal-background ()
+  "Safely set transparent background for all existing faces in terminal."
+  (unless (display-graphic-p)
+    (dolist (face '(default
+                    line-number
+                    line-number-current-line
+                    fringe
+                    hl-line
+                    solaire-default-face
+                    solaire-line-number-face
+                    solaire-fringe-face))
+      (when (facep face)
+        (set-face-background face "unspecified-bg")))))
+(unless (display-graphic-p)
+  (xterm-mouse-mode 1))
+;; Apply on startup and whenever a theme loads
+(add-hook 'doom-load-theme-hook #'my/transparent-terminal-background)
+(my/transparent-terminal-background)
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `with-eval-after-load' block, otherwise Doom's defaults may override your
 ;; settings. E.g.
