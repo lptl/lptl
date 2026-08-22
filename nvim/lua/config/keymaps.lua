@@ -10,9 +10,16 @@ vim.keymap.set({ "n", "v" }, "ga", "^", { desc = "Go to line start" })
 
 vim.keymap.set({ "n", "v" }, "ge", "$", { desc = "Go to line end" })
 -- Delete selected text without clobbering the unnamed/clipboard register
-
-vim.keymap.set("v", "<leader>d", '"_d', { desc = "Delete without yanking" })
-
+-- Delete without yanking into clipboard/register
+vim.keymap.set({ "n", "v" }, "d", '"_d', { desc = "Delete without copying" })
+vim.keymap.set({ "n", "v" }, "D", '"_D', { desc = "Delete to end of line without copying" })
+vim.keymap.set({ "n", "v" }, "x", '"_x', { desc = "Delete character without copying" })
+vim.keymap.set({ "n", "v" }, "c", '"_c', { desc = "Change without copying" })
+vim.keymap.set({ "n", "v" }, "C", '"_C', { desc = "Change to end of line without copying" })
+vim.keymap.set("v", "p", '"_dP', { desc = "Paste without overwriting clipboard" })
+-- (Optional) Add a dedicated 'Cut' command when you DO want to cut to clipboard
+vim.keymap.set({ "n", "v" }, "<leader>x", '"+d', { desc = "Cut to clipboard" })
+vim.keymap.set({ "n", "v" }, "<leader>X", '"+D', { desc = "Cut line to clipboard" })
 vim.keymap.set("n", "<leader><leader>", function()
   require("snacks").picker.buffers()
 end, { desc = "Buffers" })
