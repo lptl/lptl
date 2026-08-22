@@ -47,6 +47,12 @@
 (put 'scroll-left 'disabled nil)
 (put 'scroll-right 'disabled nil)
 
+(auto-save-visited-mode +1)
+(setq auto-save-visited-interval 5
+      auto-save-default nil
+      create-lockfiles nil
+      make-backup-files nil)
+
 ;; 2. Let Emacs's built-in mouse-wheel-mode handle tilt/trackpad scroll
 (setq mouse-wheel-tilt-scroll t
       mouse-wheel-flip-direction nil  ; flip to t only if direction feels backwards
@@ -69,12 +75,14 @@
 (map! :leader
       :desc "Toggle file tree"
       "e" #'+treemacs/toggle)
-;; Map Shift+H and Shift+L in Evil Normal mode to cycle buffers
-(map! :n "H" #'previous-buffer
-      :n "L" #'next-buffer)
 (after! treemacs
   (map! :map treemacs-mode-map
         "<backspace>" #'treemacs-root-up))
+
+;; Map Shift+H and Shift+L in Evil Normal mode to cycle buffers
+(map! :n "H" #'previous-buffer
+      :n "L" #'next-buffer)
+
 (defun +my/evil-delete-blackhole (beg end type &optional _register yank-handler)
   (evil-delete beg end type ?_ yank-handler))
 
@@ -129,8 +137,6 @@
 (setq org-directory "~/org/")
 ;; Change the main editor background color
 ;; (Optional) Customize the prompt text color (e.g., "M-x ", "Find file: ")
-(custom-set-faces!
-  '(minibuffer-prompt :foreground "#cdc9c9" :weight bold))
 
 (setq evil-normal-state-cursor '(box "#cdc9c9")   ; Blue block in Normal mode
       evil-insert-state-cursor '(box "#5f9ea0")   ; Green block in Insert mode
