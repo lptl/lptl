@@ -64,8 +64,8 @@
 (add-hook 'text-mode-hook (lambda () (setq truncate-lines t)))
 
 ;; 2. Make `Ctrl + /` toggle a popup terminal
-(map! :g "C-/" #'+vterm/toggle
-      :g "C-_" #'+vterm/toggle)  ; C-_ ensures it works in terminal/SSH sessions
+(map! :gnime "C-/" #'+vterm/toggle
+      :gnime "C-_" #'+vterm/toggle)  ; C-_ ensures it works in terminal/SSH sessions
 (define-key key-translation-map (kbd "C-c") (kbd "C-g"))
 (setq doom-font (font-spec :family "Yisk" :size 11 :weight 'regular)
       doom-variable-pitch-font (font-spec :family "Helvetica" :size 12)
