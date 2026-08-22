@@ -38,6 +38,14 @@
 (map! :leader
       :desc "Switch buffer"
       "SPC" #'switch-to-buffer)
+;; Enable smooth, pixel-by-pixel window & frame resizing
+(setq frame-resize-pixelwise t
+      window-resize-pixelwise t)
+
+;; Use macOS native window vibrancy / blur
+(when (featurep 'mac)
+  (set-face-background 'default "mac:windowBackgroundColor")
+  (set-face-stipple 'default "alpha:75%"))
 
 ;; 1. Enable disabled horizontal scroll commands (still correct/needed)
 (put 'scroll-left 'disabled nil)
@@ -107,15 +115,15 @@
       :n "S-<up>"    #'evil-window-up
       :n "S-<right>" #'evil-window-right)
 
-(use-package! eaf
-  :config
-  ;; You must require the specific apps you want EAF to register:
-  (require 'eaf-video-player nil t)
-  (require 'eaf-file-manager)
-  (require 'eaf-image-viewer)
-  (add-to-list 'auto-mode-alist '("\\.\\(png\\|jpg\\|jpeg\\|gif\\|webp\\)\\'" . eaf-open))
-  (add-to-list 'auto-mode-alist '("\\.\\(mp4\\|mkv\\|webm\\|avi\\|mov\\)\\'" . eaf-open))
-  )
+;; (use-package! eaf
+;;   :config
+;;   ;; You must require the specific apps you want EAF to register:
+;;   (require 'eaf-video-player nil t)
+;;   (require 'eaf-file-manager)
+;;   (require 'eaf-image-viewer)
+;;   (add-to-list 'auto-mode-alist '("\\.\\(png\\|jpg\\|jpeg\\|gif\\|webp\\)\\'" . eaf-open))
+;;   (add-to-list 'auto-mode-alist '("\\.\\(mp4\\|mkv\\|webm\\|avi\\|mov\\)\\'" . eaf-open))
+;;   )
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type 'relative)
