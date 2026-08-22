@@ -14,6 +14,6 @@ fi
 
 rm -rf ~/.config/nvim
 rm -rf ~/.doom.d
-ln -s ./.doom.d/ ~/.doom.d/
+ln -s ./.doom.d/ ~/.doom.d
 ln -s ./nvim ~/.config/nvim
 "$DOOM_DIR/bin/doom" sync
