@@ -42,11 +42,7 @@
 (setq frame-resize-pixelwise t
       window-resize-pixelwise t)
 
-;; Use macOS native window vibrancy / blur
-(when (featurep 'mac)
-  (set-face-background 'default "mac:windowBackgroundColor")
-  (set-face-stipple 'default "alpha:75%"))
-
+(setq +doom-dashboard-functions nil)
 ;; 1. Enable disabled horizontal scroll commands (still correct/needed)
 (put 'scroll-left 'disabled nil)
 (put 'scroll-right 'disabled nil)
