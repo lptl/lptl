@@ -119,6 +119,37 @@
       :n "S-<up>"    #'evil-window-up
       :n "S-<right>" #'evil-window-right)
 
+
+(defun my/yank-current-working-directory ()
+  "Copy the current buffer's directory to the clipboard and kill ring."
+  (interactive)
+  (let ((dir (expand-file-name (if buffer-file-name
+                                   (file-name-directory (buffer-file-name))
+                                 default-directory))))
+    (kill-new dir)
+    (message "Copied directory to clipboard: %s" dir)))
+
+(defun my/new-file-in-current-dir ()
+  "Create a new file relative to the current buffer's directory.
+Automatically creates parent directories if a nested path is entered."
+  (interactive)
+  (let* ((base-dir (if buffer-file-name
+                       (file-name-directory (buffer-file-name))
+                     default-directory))
+         (file (read-file-name "New file: " base-dir)))
+    (when (and file (not (string-empty-p file)))
+      ;; Create parent subdirectories if typing something like "utils/helper.py"
+      (unless (file-exists-p (file-name-directory file))
+        (make-directory (file-name-directory file) t))
+      (find-file file))))
+
+(map! :leader
+      ;; SPC c y -> Copy current directory path
+      :desc "Copy current directory" "c y" #'my/yank-current-working-directory
+
+      ;; SPC f n -> Create new file in current buffer's directory
+      :desc "New file in current dir" "f n" #'my/new-file-in-current-dir)
+
 ;; (use-package! eaf
 ;;   :config
 ;;   ;; You must require the specific apps you want EAF to register:
@@ -156,8 +187,20 @@
                     solaire-fringe-face))
       (when (facep face)
         (set-face-background face "unspecified-bg")))))
+
 (unless (display-graphic-p)
-  (xterm-mouse-mode 1))
+  ;; 1. Enable mouse tracking (clicks, text selection, and wheel) in terminal
+  (xterm-mouse-mode 1)
+
+  ;; 2. Configure smooth mouse scrolling
+  (setq mouse-wheel-scroll-amount '(3 ((shift) . 1)) ; scroll 3 lines per step
+        mouse-wheel-progressive-speed nil            ; disable erratic scroll acceleration
+        mouse-wheel-follow-mouse t                   ; scroll the window under cursor
+        fast-but-imprecise-scrolling t)
+
+  ;; 3. Ensure mouse click sets the cursor position accurately
+  (global-set-key [mouse-1] #'mouse-set-point))
+
 ;; Apply on startup and whenever a theme loads
 (add-hook 'doom-load-theme-hook #'my/transparent-terminal-background)
 (my/transparent-terminal-background)
