@@ -14,8 +14,8 @@ local c = {
   fg = "#cdc9c9",
   fg_dim = "#7e7979",
   black = "#1c1c1c",
-  gray1 = "#333333",
-  gray2 = "#333333",
+  gray1 = "#222222",
+  gray2 = "#444444",
   gray3 = "#444444",
   gray4 = "#666666",
   gray5 = "#AAAAAA",
@@ -60,8 +60,8 @@ hl("StatusLine", { fg = c.fg, bg = c.bg })
 hl("StatusLineNC", { fg = c.fg_dim, bg = c.bg })
 hl("WinBar", { fg = c.fg, bg = c.bg })
 hl("WinBarNC", { fg = c.fg_dim, bg = c.bg })
-hl("WinSeparator", { fg = c.gray3, bg = c.bg })
-hl("VertSplit", { fg = c.gray3, bg = c.bg })
+hl("WinSeparator", { fg = c.gray1, bg = c.bg })
+hl("VertSplit", { fg = c.gray1, bg = c.bg })
 hl("MsgArea", { fg = c.fg, bg = c.bg })
 hl("MsgSeparator", { fg = c.gray3, bg = c.bg })
 hl("EndOfBuffer", { fg = c.bg, bg = c.bg })
