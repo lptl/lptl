@@ -25,9 +25,10 @@ return {
             box = "horizontal",
             width = 0.8,
             min_width = 120,
-            height = 0.8,
+            height = 0.6,
             border = "none",
             {
+              width = 0.5,
               box = "vertical",
               border = "top", -- Top border to render the title
               title = " {title} {live} {flags} ",
