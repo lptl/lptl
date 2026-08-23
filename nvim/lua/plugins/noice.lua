@@ -54,9 +54,10 @@ return {
           help = { icon = "" },
         },
       })
-      -- Minimal message rendering: no icons/borders on notifications either
       opts.messages = vim.tbl_deep_extend("force", opts.messages or {}, {
-        view = "mini", -- small, unobtrusive corner notifications instead of popups
+        view = "notify", -- changed from "mini" to "notify"
+        view_error = "notify",
+        view_warn = "notify",
       })
       -- Disable the fancier LSP progress/hover UI chrome if you want max minimalism
       opts.lsp = vim.tbl_deep_extend("force", opts.lsp or {}, {
