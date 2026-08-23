@@ -1,5 +1,6 @@
 return {
   "akinsho/bufferline.nvim",
+  enabled = false,
   event = "VeryLazy",
   opts = {
     options = {
@@ -78,7 +79,7 @@ return {
       separator_selected = { fg = "NONE", bg = "NONE" },
       separator_visible = { fg = "NONE", bg = "NONE" },
 
-      indicator_selected = { fg = "#87ceeb", bg = "NONE" },
+      indicator_selected = { fg = "NONE", bg = "NONE" },
 
       modified = { fg = "#fafad2", bg = "NONE" },
       modified_selected = { fg = "#fafad2", bg = "NONE" },

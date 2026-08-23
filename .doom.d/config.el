@@ -106,6 +106,19 @@
   (map! :map treemacs-mode-map
         "<backspace>" #'treemacs-root-up))
 
+;; 1. Set macOS Command (⌘) key to act as Meta (M-)
+(setq mac-command-modifier 'meta
+      ns-command-modifier  'meta)
+
+;; 2. Map M-v (Cmd + V) and M-c (Cmd + C) globally across all Evil states
+(map! :gnime "M-v" #'clipboard-yank              ; Cmd + V to paste
+      :gnime "M-c" #'clipboard-kill-ring-save)   ; Cmd + C to copy
+
+;; 3. Make sure M-v (Cmd + V) pastes inside the Minibuffer prompt
+(map! :map minibuffer-local-map
+      "M-v" #'clipboard-yank
+      "M-c" #'clipboard-kill-ring-save)
+
 ;; Map Shift+H and Shift+L in Evil Normal mode to cycle buffers
 (map! :n "H" #'previous-buffer
       :n "L" #'next-buffer)

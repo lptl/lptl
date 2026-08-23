@@ -13,7 +13,6 @@ return {
         },
         view = "split",
       })
-
       -- Reposition the cmdline popup to the vertical center of the screen
       opts.views = opts.views or {}
       opts.views.cmdline_popup = vim.tbl_deep_extend("force", opts.views.cmdline_popup or {}, {
@@ -29,24 +28,40 @@ return {
           width = "auto",
           height = "auto",
         },
+        padding = { 0, 1 }, -- tight vertical, minimal horizontal padding
+        win_options = {
+          winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
+        },
       })
-
       -- Keep the completion popup menu anchored just below the cmdline
       opts.views.cmdline_popupmenu = vim.tbl_deep_extend("force", opts.views.cmdline_popupmenu or {}, {
         position = {
           row = "55%",
           col = "50%",
         },
+        border = {
+          style = "none",
+        },
       })
-
       opts.cmdline = vim.tbl_deep_extend("force", opts.cmdline or {}, {
         format = {
-          cmdline = { icon = "🧼" }, -- the ":" command prompt (what you saw in your earlier screenshot)
-          search_down = { icon = "🔍" },
-          search_up = { icon = "🔍 " },
-          filter = { icon = "$" },
+          -- Remove icons entirely for a plain, minimal look
+          cmdline = { icon = "" },
+          search_down = { icon = "" },
+          search_up = { icon = "" },
+          filter = { icon = "" },
           lua = { icon = "" },
-          help = { icon = "?" },
+          help = { icon = "" },
+        },
+      })
+      -- Minimal message rendering: no icons/borders on notifications either
+      opts.messages = vim.tbl_deep_extend("force", opts.messages or {}, {
+        view = "mini", -- small, unobtrusive corner notifications instead of popups
+      })
+      -- Disable the fancier LSP progress/hover UI chrome if you want max minimalism
+      opts.lsp = vim.tbl_deep_extend("force", opts.lsp or {}, {
+        progress = {
+          enabled = false,
         },
       })
     end,
