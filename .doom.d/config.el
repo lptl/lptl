@@ -65,8 +65,35 @@
 (add-hook 'prog-mode-hook (lambda () (setq truncate-lines t)))
 (add-hook 'text-mode-hook (lambda () (setq truncate-lines t)))
 
-(map! :gnime "C-/" (cmd! (+vterm/toggle t))
-      :gnime "C-_" (cmd! (+vterm/toggle t)))  ; Terminal / SSH fallback
+(defun my/new-vterm ()
+  "Spawn a new vterm in the same window (without splitting or dedication errors)."
+  (interactive)
+  (require 'vterm)
+  (require 'cl-lib)
+  (let* ((buf (generate-new-buffer "*vterm*"))
+         (vterm-win (cl-find-if (lambda (w)
+                                  (with-current-buffer (window-buffer w)
+                                    (derived-mode-p 'vterm-mode)))
+                                (window-list))))
+    ;; Initialize the new vterm buffer
+    (with-current-buffer buf
+      (vterm-mode))
+    (if vterm-win
+        ;; If a vterm window is already visible:
+        (progn
+          ;; 1. Temporarily remove window dedication
+          (set-window-dedicated-p vterm-win nil)
+          ;; 2. Swap in the new buffer
+          (set-window-buffer vterm-win buf)
+          ;; 3. Focus the window
+          (select-window vterm-win)
+          ;; 4. Re-dedicate the window to the new vterm buffer
+          (set-window-dedicated-p vterm-win t))
+      ;; If no vterm window is open on screen, open a fresh popup
+      (pop-to-buffer buf))))
+
+(map! :gnime "C-/" #'my/new-vterm
+      :gnime "C-_" #'my/new-vterm)
 
 (define-key key-translation-map (kbd "C-c") (kbd "C-g"))
 (setq doom-font (font-spec :family "Yisk" :size 11 :weight 'regular)
