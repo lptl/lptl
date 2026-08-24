@@ -1,69 +1,82 @@
--- ~/.config/nvim/lua/plugins/noice.lua
 return {
   {
     "folke/noice.nvim",
     opts = function(_, opts)
-      -- Route shell command (:!) output to a scrollable split instead of
-      -- relying on noice's default popup rendering (buggy for shell_out on 0.11+)
       opts.routes = opts.routes or {}
       table.insert(opts.routes, 1, {
         filter = {
           event = "msg_show",
-          kind = "shell_out", -- Neovim 0.11+; see note below for older versions
+          kind = "shell_out",
         },
         view = "split",
       })
-      -- Reposition the cmdline popup to the vertical center of the screen
+
       opts.views = opts.views or {}
       opts.views.cmdline_popup = vim.tbl_deep_extend("force", opts.views.cmdline_popup or {}, {
-        border = {
-          style = "none",
-        },
-        position = {
-          row = "50%",
-          col = "50%",
-        },
-        size = {
-          min_width = 60,
-          width = "auto",
-          height = "auto",
-        },
-        padding = { 0, 1 }, -- tight vertical, minimal horizontal padding
+        border = { style = "none" },
+        position = { row = "50%", col = "50%" },
+        size = { min_width = 60, width = "auto", height = "auto" },
+        padding = { 0, 1 },
         win_options = {
           winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
         },
       })
-      -- Keep the completion popup menu anchored just below the cmdline
       opts.views.cmdline_popupmenu = vim.tbl_deep_extend("force", opts.views.cmdline_popupmenu or {}, {
-        position = {
-          row = "55%",
-          col = "50%",
-        },
-        border = {
-          style = "none",
-        },
+        position = { row = "55%", col = "50%" },
+        border = { style = "none" },
       })
+
+      -- Bottom, borderless, full-width bar -- same look as native "/" search.
+      -- Defined explicitly (not via `view = "cmdline"` aliasing) because the
+      -- substitute confirm dialog (kind = "confirm_sub") always renders via
+      -- the "confirm" view and ignores opts.routes overrides
+      -- (see https://github.com/folke/noice.nvim/issues/1185), so the view
+      -- itself has to carry the bottom-bar styling directly.
+      local bottom_bar = {
+        backend = "popup",
+        relative = "editor",
+        focusable = false,
+        position = { row = "100%", col = "0%" },
+        size = { width = "100%", height = "auto" },
+        border = { style = "none" },
+        win_options = {
+          winhighlight = "Normal:MsgArea,FloatBorder:MsgArea",
+        },
+      }
+      opts.views.confirm = bottom_bar
+      opts.views.input = vim.tbl_deep_extend("force", {}, bottom_bar, { focusable = true })
+
       opts.cmdline = vim.tbl_deep_extend("force", opts.cmdline or {}, {
         format = {
-          -- Remove icons entirely for a plain, minimal look
           cmdline = { icon = "" },
           search_down = { icon = "" },
           search_up = { icon = "" },
           filter = { icon = "" },
           lua = { icon = "" },
           help = { icon = "" },
+          replace_target = {
+            pattern = "^Replace:%s*",
+            icon = " ",
+            lang = "regex",
+            view = "cmdline", -- matches the same bottom bar as sea[118;1:3urch
+          },
+          replace_sub = {
+            pattern = "^With:%s*",
+            icon = "󰛔 ",
+            lang = "text",
+            view = "cmdline",
+          },
         },
       })
+
       opts.messages = vim.tbl_deep_extend("force", opts.messages or {}, {
-        view = "notify", -- changed from "mini" to "notify"
+        view = "notify",
         view_error = "notify",
         view_warn = "notify",
       })
-      -- Disable the fancier LSP progress/hover UI chrome if you want max minimalism
+
       opts.lsp = vim.tbl_deep_extend("force", opts.lsp or {}, {
-        progress = {
-          enabled = false,
-        },
+        progress = { enabled = false },
       })
     end,
   },

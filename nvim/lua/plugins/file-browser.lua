@@ -17,6 +17,16 @@ return {
           theme = "ivy",
           hijack_netrw = true,
           sorting_strategy = "ascending",
+          attach_mappings = function(prompt_bufnr, map)
+            -- <C-y>: copy the currently browsed/typed directory path to the clipboard
+            map({ "i", "n" }, "<C-y>", function()
+              local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+              local path = picker.finder.path
+              vim.fn.setreg("+", path)
+              vim.notify("Copied path: " .. path)
+            end, { desc = "Copy current path to clipboard" })
+            return true -- keep the default file-browser mappings
+          end,
           layout_config = {
             height = 0.6,
             prompt_position = "top", -- 👈 Moves the input bar to the top

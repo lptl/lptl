@@ -29,6 +29,17 @@ vim.keymap.set("n", "<leader>cy", function()
   vim.notify("Copied cwd: " .. vim.fn.getcwd())
 end, { desc = "Copy cwd to clipboard" })
 
+-- Find files in the current working directory (overrides LazyVim's
+-- default "Find Config File" on <leader>fc)
+vim.keymap.set("n", "<leader>fc", function()
+  LazyVim.pick.open("files", { root = false })
+end, { desc = "Find Files (cwd)" })
+
+-- Grep / Search text in the current working directory (cwd)
+vim.keymap.set("n", "<leader>sc", function()
+  LazyVim.pick.open("live_grep", { root = false })
+end, { desc = "Grep (cwd)" })
+
 -- Toggle auto-save (auto-save.nvim)
 vim.keymap.set("n", "<leader>uS", "<cmd>ASToggle<cr>", { desc = "Toggle auto-save" })
 
@@ -37,6 +48,116 @@ vim.keymap.set("n", "<leader>fy", function()
   vim.fn.setreg("+", path)
   vim.notify("Copied: " .. path)
 end, { desc = "Copy file path" })
+
+-- Helper to wipe out all match and search highlights
+local function clear_highlights(match_id)
+  if match_id then
+    pcall(vim.fn.matchdelete, match_id)
+  end
+  vim.v.hlsearch = 0
+  pcall(vim.cmd, "nohlsearch")
+  vim.cmd.redraw()
+end
+
+local function input_with_live_highlight(prompt)
+  local match_id = nil
+  local group = vim.api.nvim_create_augroup("ReplaceLiveHighlight_" .. vim.loop.hrtime(), { clear = true })
+
+  -- Live highlight while typing
+  vim.api.nvim_create_autocmd("CmdlineChanged", {
+    group = group,
+    pattern = "@",
+    callback = function()
+      if match_id then
+        pcall(vim.fn.matchdelete, match_id)
+        match_id = nil
+      end
+      local text = vim.fn.getcmdline()
+      if text ~= "" then
+        local pattern = "\\V" .. vim.fn.escape(text, [[\]])
+        local ok, id = pcall(vim.fn.matchadd, "IncSearch", pattern, 10)
+        if ok then
+          match_id = id
+        end
+      end
+      vim.cmd.redraw()
+    end,
+  })
+
+  -- Cleanup match on leaving prompt
+  vim.api.nvim_create_autocmd("CmdlineLeave", {
+    group = group,
+    pattern = "@",
+    once = true,
+    callback = function()
+      if match_id then
+        pcall(vim.fn.matchdelete, match_id)
+        match_id = nil
+      end
+      pcall(vim.api.nvim_del_augroup_by_id, group)
+    end,
+  })
+
+  local ok, result = pcall(vim.fn.input, { prompt = prompt, cancelreturn = "\0" })
+
+  -- Cleanup match
+  if match_id then
+    pcall(vim.fn.matchdelete, match_id)
+    match_id = nil
+  end
+  pcall(vim.api.nvim_del_augroup_by_id, group)
+
+  -- If aborted (Esc / C-c) or empty, clear everything and exit
+  if not ok or result == "\0" or result == "" then
+    clear_highlights(nil)
+    return nil
+  end
+
+  return result
+end
+
+local function replace_in_file(in_selection)
+  if in_selection then
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
+  end
+
+  -- 1. Target input
+  local old = input_with_live_highlight("Replace: ")
+  if not old then
+    clear_highlights()
+    return
+  end
+
+  -- 2. Highlight matches while asking for replacement
+  vim.fn.setreg("/", "\\V" .. vim.fn.escape(old, [[\]]))
+  vim.o.hlsearch = true
+  vim.cmd.redraw()
+
+  -- 3. Replacement input
+  local ok, new = pcall(vim.fn.input, { prompt = "With: ", cancelreturn = "\0" })
+  if not ok or new == "\0" then
+    clear_highlights()
+    return
+  end
+
+  local range = in_selection and "'<,'>" or "%"
+  local pat = "\\V" .. vim.fn.escape(old, [[/\]])
+  local rep = vim.fn.escape(new, [[/\&~]])
+
+  -- 4. Execute substitution wrapped in pcall so quitting with 'q', Esc, or Ctrl+C is caught
+  pcall(vim.cmd, string.format("%ss/%s/%s/gc", range, pat, rep))
+
+  -- 5. Always wipe out the highlights when done or when 'q'/Esc is pressed
+  clear_highlights()
+end
+
+vim.keymap.set("n", "<leader>r", function()
+  replace_in_file(false)
+end, { desc = "Replace string in file" })
+
+vim.keymap.set("x", "<leader>r", function()
+  replace_in_file(true)
+end, { desc = "Replace string in selection" })
 
 -- Create a new file relative to the current buffer's directory
 vim.keymap.set("n", "<leader>fn", function()
