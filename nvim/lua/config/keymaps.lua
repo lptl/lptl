@@ -6,9 +6,10 @@ vim.keymap.set("n", "<S-Up>", "<C-w>k", { desc = "Go to Upper Window" })
 
 vim.keymap.set("n", "<S-Right>", "<C-w>l", { desc = "Go to Right Window" })
 -- Ergonomic Line Start & End (Normal + Visual mode)
-vim.keymap.set({ "n", "v" }, "ga", "^", { desc = "Go to line start" })
+-- (ga/ge would clobber the built-in :ascii and prev-word-end motions)
+vim.keymap.set({ "n", "v" }, "H", "^", { desc = "Go to line start" })
 
-vim.keymap.set({ "n", "v" }, "ge", "$", { desc = "Go to line end" })
+vim.keymap.set({ "n", "v" }, "L", "$", { desc = "Go to line end" })
 -- Delete selected text without clobbering the unnamed/clipboard register
 -- Delete without yanking into clipboard/register
 vim.keymap.set({ "n", "v" }, "d", '"_d', { desc = "Delete without copying" })
@@ -49,70 +50,67 @@ vim.keymap.set("n", "<leader>fy", function()
   vim.notify("Copied: " .. path)
 end, { desc = "Copy file path" })
 
--- Helper to wipe out all match and search highlights
-local function clear_highlights(match_id)
-  if match_id then
-    pcall(vim.fn.matchdelete, match_id)
+vim.keymap.set("n", "<leader>fY", function()
+  local path = vim.fn.expand("%:.")
+  vim.fn.setreg("+", path)
+  vim.notify("Copied: " .. path)
+end, { desc = "Copy file path (relative)" })
+
+-- Replace in file / selection (`<leader>r`)
+-- Live-highlights the target while typing and clears ALL highlights on every
+-- exit path: aborting either prompt (Esc / <C-c>), quitting the confirm
+-- dialog (q / Esc / <C-c>), or finishing normally.
+
+-- Tracks the one transient matchadd() id used for live highlighting.
+local replace_state = { match_id = nil }
+
+local function replace_clear()
+  if replace_state.match_id then
+    pcall(vim.fn.matchdelete, replace_state.match_id)
+    replace_state.match_id = nil
   end
   vim.v.hlsearch = 0
   pcall(vim.cmd, "nohlsearch")
   vim.cmd.redraw()
 end
 
-local function input_with_live_highlight(prompt)
-  local match_id = nil
-  local group = vim.api.nvim_create_augroup("ReplaceLiveHighlight_" .. vim.loop.hrtime(), { clear = true })
+-- input() wrapper. Returns the entered text, or nil when aborted
+-- (Esc / <C-c>). With highlight=true, matches of the text typed so far
+-- are live-highlighted in the buffer until the prompt closes.
+local function replace_input(prompt, highlight)
+  local group = vim.api.nvim_create_augroup("ReplacePrompt_" .. vim.uv.hrtime(), { clear = true })
 
-  -- Live highlight while typing
-  vim.api.nvim_create_autocmd("CmdlineChanged", {
-    group = group,
-    pattern = "@",
-    callback = function()
-      if match_id then
-        pcall(vim.fn.matchdelete, match_id)
-        match_id = nil
-      end
-      local text = vim.fn.getcmdline()
-      if text ~= "" then
-        local pattern = "\\V" .. vim.fn.escape(text, [[\]])
-        local ok, id = pcall(vim.fn.matchadd, "IncSearch", pattern, 10)
-        if ok then
-          match_id = id
+  if highlight then
+    vim.api.nvim_create_autocmd("CmdlineChanged", {
+      group = group,
+      pattern = "@",
+      callback = function()
+        if replace_state.match_id then
+          pcall(vim.fn.matchdelete, replace_state.match_id)
+          replace_state.match_id = nil
         end
-      end
-      vim.cmd.redraw()
-    end,
-  })
-
-  -- Cleanup match on leaving prompt
-  vim.api.nvim_create_autocmd("CmdlineLeave", {
-    group = group,
-    pattern = "@",
-    once = true,
-    callback = function()
-      if match_id then
-        pcall(vim.fn.matchdelete, match_id)
-        match_id = nil
-      end
-      pcall(vim.api.nvim_del_augroup_by_id, group)
-    end,
-  })
+        local text = vim.fn.getcmdline()
+        if text ~= "" then
+          local ok, id = pcall(vim.fn.matchadd, "IncSearch", "\\V" .. vim.fn.escape(text, [[\]]), 10)
+          replace_state.match_id = ok and id or nil
+        end
+        vim.cmd.redraw()
+      end,
+    })
+  end
 
   local ok, result = pcall(vim.fn.input, { prompt = prompt, cancelreturn = "\0" })
 
-  -- Cleanup match
-  if match_id then
-    pcall(vim.fn.matchdelete, match_id)
-    match_id = nil
-  end
+  -- Prompt closed: live highlight and autocmds are no longer needed
   pcall(vim.api.nvim_del_augroup_by_id, group)
+  if replace_state.match_id then
+    pcall(vim.fn.matchdelete, replace_state.match_id)
+    replace_state.match_id = nil
+  end
 
-  -- If aborted (Esc / C-c) or empty, clear everything and exit
-  if not ok or result == "\0" or result == "" then
-    clear_highlights(nil)
+  if not ok or result == "\0" then
     return nil
   end
-
   return result
 end
 
@@ -121,34 +119,35 @@ local function replace_in_file(in_selection)
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "nx", false)
   end
 
-  -- 1. Target input
-  local old = input_with_live_highlight("Replace: ")
-  if not old then
-    clear_highlights()
-    return
-  end
+  -- xpcall guarantees highlight cleanup no matter how the flow is aborted
+  xpcall(function()
+    -- 1. Target (empty = abort)
+    local old = replace_input("Replace: ", true)
+    if not old or old == "" then
+      return
+    end
 
-  -- 2. Highlight matches while asking for replacement
-  vim.fn.setreg("/", "\\V" .. vim.fn.escape(old, [[\]]))
-  vim.o.hlsearch = true
-  vim.cmd.redraw()
+    -- 2. Keep matches highlighted (via 'hlsearch') for the next steps
+    vim.fn.setreg("/", "\\V" .. vim.fn.escape(old, [[\]]))
+    vim.o.hlsearch = true
+    vim.cmd.redraw()
 
-  -- 3. Replacement input
-  local ok, new = pcall(vim.fn.input, { prompt = "With: ", cancelreturn = "\0" })
-  if not ok or new == "\0" then
-    clear_highlights()
-    return
-  end
+    -- 3. Replacement (empty = delete matches; nil = aborted)
+    local new = replace_input("With: ", false)
+    if not new then
+      return
+    end
 
-  local range = in_selection and "'<,'>" or "%"
-  local pat = "\\V" .. vim.fn.escape(old, [[/\]])
-  local rep = vim.fn.escape(new, [[/\&~]])
+    -- 4. Interactive substitute; pcall catches q / Esc / <C-c> at the confirm
+    local range = in_selection and "'<,'>" or "%"
+    local pat = "\\V" .. vim.fn.escape(old, [[/\]])
+    local rep = vim.fn.escape(new, [[/\&~]])
+    pcall(vim.cmd, string.format("%ss/%s/%s/gc", range, pat, rep))
+  end, function(err)
+    vim.notify("Replace aborted: " .. tostring(err), vim.log.levels.DEBUG)
+  end)
 
-  -- 4. Execute substitution wrapped in pcall so quitting with 'q', Esc, or Ctrl+C is caught
-  pcall(vim.cmd, string.format("%ss/%s/%s/gc", range, pat, rep))
-
-  -- 5. Always wipe out the highlights when done or when 'q'/Esc is pressed
-  clear_highlights()
+  replace_clear()
 end
 
 vim.keymap.set("n", "<leader>r", function()

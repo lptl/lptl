@@ -3,6 +3,7 @@ return {
     "nvim-telescope/telescope-file-browser.nvim",
     dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
     config = function()
+      require("telescope").load_extension("file_browser")
       local fb = require("telescope").extensions.file_browser
 
       local function doom_find_file()
@@ -15,7 +16,6 @@ return {
           hidden = true, -- Show dotfiles (.doom.d, .config)
           display_stat = { mode = true, size = true, date = true },
           theme = "ivy",
-          hijack_netrw = true,
           sorting_strategy = "ascending",
           attach_mappings = function(prompt_bufnr, map)
             -- <C-y>: copy the currently browsed/typed directory path to the clipboard

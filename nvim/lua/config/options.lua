@@ -30,4 +30,5 @@ if vim.env.SSH_CONNECTION ~= nil then
   }
 end
 vim.opt.foldenable = false
-vim.o.winborder = "none"
+vim.opt.scrolloff = 4
+vim.opt.sidescrolloff = 4

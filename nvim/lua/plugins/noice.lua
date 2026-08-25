@@ -54,15 +54,17 @@ return {
           filter = { icon = "" },
           lua = { icon = "" },
           help = { icon = "" },
+          -- The two prompts of the `<leader>r` replace flow: rendered in the
+          -- same minimal, borderless bottom bar as search (no icons).
           replace_target = {
             pattern = "^Replace:%s*",
-            icon = " ",
+            icon = "",
             lang = "regex",
-            view = "cmdline", -- matches the same bottom bar as sea[118;1:3urch
+            view = "cmdline",
           },
           replace_sub = {
             pattern = "^With:%s*",
-            icon = "󰛔 ",
+            icon = "",
             lang = "text",
             view = "cmdline",
           },
