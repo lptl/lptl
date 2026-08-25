@@ -7,9 +7,9 @@ return {
       enabled = true,
       timeout = 7000,
       margin = {
-        top = 1, -- Space from the top edge
-        right = 1, -- Space from the right edge
-        bottom = 1, -- Space from the bottom edge
+        top = 4, -- Space from the top edge
+        right = 2, -- Space from the right edge
+        bottom = 4, -- Space from the bottom edge
       },
     },
     styles = {

@@ -32,3 +32,19 @@ end
 vim.opt.foldenable = false
 vim.opt.scrolloff = 4
 vim.opt.sidescrolloff = 4
+
+vim.diagnostic.config({
+  virtual_text = false, -- Removes the red/yellow text trailing your code lines
+  underline = true, -- Keeps subtle underline under the error
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "E",
+      [vim.diagnostic.severity.WARN] = "W",
+      [vim.diagnostic.severity.HINT] = "H",
+      [vim.diagnostic.severity.INFO] = "I",
+    },
+  },
+})
+
+vim.opt.wildmode = "full" -- 1st Tab completes match 1, next Tabs cycle, typing continues
+vim.opt.wildmenu = true

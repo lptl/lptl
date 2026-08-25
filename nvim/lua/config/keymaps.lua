@@ -7,9 +7,9 @@ vim.keymap.set("n", "<S-Up>", "<C-w>k", { desc = "Go to Upper Window" })
 vim.keymap.set("n", "<S-Right>", "<C-w>l", { desc = "Go to Right Window" })
 -- Ergonomic Line Start & End (Normal + Visual mode)
 -- (ga/ge would clobber the built-in :ascii and prev-word-end motions)
-vim.keymap.set({ "n", "v" }, "H", "^", { desc = "Go to line start" })
+vim.keymap.set({ "n", "v" }, "A", "^", { desc = "Go to line start" })
 
-vim.keymap.set({ "n", "v" }, "L", "$", { desc = "Go to line end" })
+vim.keymap.set({ "n", "v" }, "E", "$", { desc = "Go to line end" })
 -- Delete selected text without clobbering the unnamed/clipboard register
 -- Delete without yanking into clipboard/register
 vim.keymap.set({ "n", "v" }, "d", '"_d', { desc = "Delete without copying" })
@@ -144,7 +144,7 @@ local function replace_in_file(in_selection)
     local rep = vim.fn.escape(new, [[/\&~]])
     pcall(vim.cmd, string.format("%ss/%s/%s/gc", range, pat, rep))
   end, function(err)
-    vim.notify("Replace aborted: " .. tostring(err), vim.log.levels.DEBUG)
+    vim.notify("Replace Stopped\n" .. tostring(err), vim.log.levels.DEBUG)
   end)
 
   replace_clear()
@@ -161,7 +161,7 @@ end, { desc = "Replace string in selection" })
 -- Create a new file relative to the current buffer's directory
 vim.keymap.set("n", "<leader>fn", function()
   local dir = vim.fn.expand("%:p:h")
-  local name = vim.fn.input("New file: " .. dir .. "/")
+  local name = vim.fn.input("New file in " .. dir .. "/")
   if name ~= "" then
     vim.cmd.edit(dir .. "/" .. name)
   end
@@ -170,10 +170,22 @@ end, { desc = "New file (buffer dir)" })
 -- Create a new directory relative to the current buffer's directory
 vim.keymap.set("n", "<leader>dn", function()
   local dir = vim.fn.expand("%:p:h")
-  local name = vim.fn.input("New directory: " .. dir .. "/")
+  local name = vim.fn.input("New dir in " .. dir .. "/")
   if name ~= "" then
     local path = dir .. "/" .. name
     vim.fn.mkdir(path, "p")
-    vim.notify("Created: " .. path)
+    vim.notify("Created\n" .. path)
   end
 end, { desc = "New directory (buffer dir)" })
+
+vim.keymap.set("n", "<leader>py", function()
+  -- Gets the root project directory (using LazyVim's root detector)
+  local path = LazyVim.root.get()
+
+  -- Copy to system clipboard ("+") and default register ('"')
+  vim.fn.setreg("+", path)
+  vim.fn.setreg('"', path)
+
+  -- Show a confirmation popup notification
+  vim.notify("Project Path Copied\n" .. path, vim.log.levels.INFO, { title = "Clipboard" })
+end, { desc = "Copy project path" })

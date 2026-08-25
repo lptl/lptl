@@ -1,3 +1,4 @@
+-- ~/.config/nvim/lua/plugins/noice.lua
 return {
   {
     "folke/noice.nvim",
@@ -18,20 +19,28 @@ return {
         size = { min_width = 60, width = "auto", height = "auto" },
         padding = { 0, 1 },
         win_options = {
-          winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
+          winhighlight = "Normal:NormalFloat,FloatBorder:NormalFloat",
         },
       })
+
       opts.views.cmdline_popupmenu = vim.tbl_deep_extend("force", opts.views.cmdline_popupmenu or {}, {
         position = { row = "55%", col = "50%" },
         border = { style = "none" },
       })
 
-      -- Bottom, borderless, full-width bar -- same look as native "/" search.
-      -- Defined explicitly (not via `view = "cmdline"` aliasing) because the
-      -- substitute confirm dialog (kind = "confirm_sub") always renders via
-      -- the "confirm" view and ignores opts.routes overrides
-      -- (see https://github.com/folke/noice.nvim/issues/1185), so the view
-      -- itself has to carry the bottom-bar styling directly.
+      -- Fixed Style B: Invisible space border so the title text can render without error
+      opts.views.cmdline_input = {
+        position = { row = "50%", col = "50%" },
+        size = { min_width = 60, width = "auto", height = "auto" },
+        border = {
+          style = { " ", " ", " ", " ", " ", " ", " ", " " }, -- 8 invisible border chars
+          padding = { 0, 1 },
+        },
+        win_options = {
+          winhighlight = "Normal:NormalFloat,FloatBorder:NormalFloat",
+        },
+      }
+
       local bottom_bar = {
         backend = "popup",
         relative = "editor",
@@ -44,7 +53,6 @@ return {
         },
       }
       opts.views.confirm = bottom_bar
-      opts.views.input = vim.tbl_deep_extend("force", {}, bottom_bar, { focusable = true })
 
       opts.cmdline = vim.tbl_deep_extend("force", opts.cmdline or {}, {
         format = {
@@ -54,8 +62,10 @@ return {
           filter = { icon = "" },
           lua = { icon = "" },
           help = { icon = "" },
-          -- The two prompts of the `<leader>r` replace flow: rendered in the
-          -- same minimal, borderless bottom bar as search (no icons).
+          input = {
+            icon = "",
+            view = "cmdline_input",
+          },
           replace_target = {
             pattern = "^Replace:%s*",
             icon = "",

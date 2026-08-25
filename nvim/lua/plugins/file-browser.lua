@@ -3,33 +3,83 @@ return {
     "nvim-telescope/telescope-file-browser.nvim",
     dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
     config = function()
-      require("telescope").load_extension("file_browser")
-      local fb = require("telescope").extensions.file_browser
+      local telescope = require("telescope")
+      local actions = require("telescope.actions")
+      local action_state = require("telescope.actions.state")
+
+      telescope.setup({
+        extensions = {
+          file_browser = {
+            display_stat = {
+              date = true,
+              size = true,
+              mode = false,
+            },
+            dir_icon = "/ ",
+            dir_icon_hl = "Directory",
+            disable_devicons = true,
+            git_status = false,
+            prompt_prefix = "",
+            selection_caret = "",
+            entry_prefix = "",
+          },
+        },
+      })
+
+      telescope.load_extension("file_browser")
+      local fb = telescope.extensions.file_browser
+      local fb_actions = fb.actions
 
       local function doom_find_file()
         fb.file_browser({
-          prompt_title = "Find file",
+          prompt_title = "",
           path = "%:p:h",
           cwd = "%:p:h",
           prompt_path = true,
-          grouped = true, -- Folders first, files below
-          hidden = true, -- Show dotfiles (.doom.d, .config)
-          display_stat = { mode = true, size = true, date = true },
+          grouped = true,
+          hidden = true,
           theme = "ivy",
+          border = false,
           sorting_strategy = "ascending",
+
+          display_stat = {
+            date = true,
+            size = true,
+            mode = false,
+          },
+
+          dir_icon = "/ ",
+          dir_icon_hl = "Directory",
+          disable_devicons = true,
+          git_status = false,
+          prompt_prefix = "▶ ",
+          selection_caret = "▶ ",
+          entry_prefix = "  ",
+
           attach_mappings = function(prompt_bufnr, map)
-            -- <C-y>: copy the currently browsed/typed directory path to the clipboard
-            map({ "i", "n" }, "<C-y>", function()
-              local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+            -- Bind Shift-Tab to go to parent folder:
+            map("i", "<S-Tab>", function()
+              fb_actions.goto_parent_dir(prompt_bufnr)
+            end)
+            map("n", "<S-Tab>", function()
+              fb_actions.goto_parent_dir(prompt_bufnr)
+            end)
+
+            -- Bind Ctrl-y to copy path to clipboard:
+            map("i", "<C-y>", function()
+              local picker = action_state.get_current_picker(prompt_bufnr)
               local path = picker.finder.path
               vim.fn.setreg("+", path)
               vim.notify("Copied path: " .. path)
-            end, { desc = "Copy current path to clipboard" })
-            return true -- keep the default file-browser mappings
+            end)
+
+            return true
           end,
+
           layout_config = {
             height = 0.6,
-            prompt_position = "top", -- 👈 Moves the input bar to the top
+            prompt_position = "top",
+            preview_width = 0.6,
           },
         })
       end
